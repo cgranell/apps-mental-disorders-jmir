@@ -9,22 +9,6 @@ output:
 urlcolor: blue    
 ---
 
-## License
-
-This document is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
-
-The code is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
-
-The data used is licensed under a [Open Data Commons Attribution License](https://opendatacommons.org/licenses/by/).
-
-See the paper's "Author Contributions" section for details on the contributors of data files.
-
-\newpage
-
-
-## Metadata
-
-Required libraries and runtime environment description.
 
 ```{r load_libraries, echo=FALSE, message=FALSE, warning=FALSE}
 library(gt.emidata)
@@ -41,12 +25,7 @@ library(knitr)
 
 ```
 
-
-```{r session_info, echo=FALSE}
-# devtools::session_info(include_base = TRUE)
-```
-
-This document is versioned in a public [git](https://git-scm.com/) repo: [https://github.com/cgranell/apps-treatment-mental-disorders](https://github.com/cgranell/apps-treatment-mental-disorders).
+This document is versioned in a public [git](https://git-scm.com/) repo: [https://github.com/cgranell/apps-mental-disorders-jmir](https://github.com/cgranell/apps-mental-disorders-jmir).
 
 \newpage
 
@@ -65,10 +44,9 @@ all_data <-
 ```
 
 
-
 ```{r all_data, echo=FALSE}
 # FIXME: local dataset
-#load(file = here("all_data.rda"))
+#load(file = here("data", "all_data.rda"))
 
 n_md <- nlevels(all_data$md_desc)
 n_papers = nrow(all_data)
@@ -116,9 +94,7 @@ md_lbl_production <- c(
 default_palette <- c("NO ASSESSMENT"="#AF8DC3", "USABILITY/UX"="#D9F0D3", "EFFECT AND USABILITY/UX"="#7FBF7B", "EFFECT"="#1B7837")
 ```
 
-The final number of surveyed papers is `r n_papers`. For each paper, we have extracted `r ncol(all_data)` items. Each item is described in the methods section of the paper.
-
-About `r percent(n_assessment_yes/n_papers)` (N=`r n_assessment_yes`) of papers reported some kind of assessment, whereas `r percent(n_assessment_no/n_papers)` (N=`r n_assessment_no[[1]]`) reported no assessment at all. Looking closer at the type of assessment: `r percent(assessment_type_n[[4]]/n_papers)` (N=`r assessment_type_n[[4]]`) focus on the effect of intervention on clinical symptomology; `r percent(assessment_type_n[[3]]/n_papers)` (N=`r assessment_type_n[[3]]`) report a mix of effect and usability / UX assessment; `r percent(assessment_type_n[[2]]/n_papers)` (N=`r assessment_type_n[[2]]`) focus solely on usability / UX.
+The final number of surveyed papers is `r n_papers`. For each paper, we have extracted `r ncol(all_data)` items. Each item is described in the methods section of the paper. About `r percent(n_assessment_yes/n_papers)` (N=`r n_assessment_yes`) of papers reported some kind of assessment, whereas `r percent(n_assessment_no/n_papers)` (N=`r n_assessment_no[[1]]`) reported no assessment at all. Looking closer at the type of assessment: `r percent(assessment_type_n[[4]]/n_papers)` (N=`r assessment_type_n[[4]]`) focus on the effect of intervention on clinical symptomology; `r percent(assessment_type_n[[3]]/n_papers)` (N=`r assessment_type_n[[3]]`) report a mix of effect and usability / UX assessment; `r percent(assessment_type_n[[2]]/n_papers)` (N=`r assessment_type_n[[2]]`) focus solely on usability / UX.
 
 \newpage
 
@@ -136,8 +112,8 @@ data_tbl_assess <-
     group_by(val_type) %>%
     summarise(n = n()) %>%
     mutate(n_lbl = if_else(val_type == "NO ASSESSMENT", 
-                           paste0(n, " (", round(n/n_papers*100,1), "%)*"),
-                           paste0(n, " (", round(n/n_assessment_yes*100,1), "%)†")))
+                           paste0(n, "/",n_papers, " (", round(n/n_papers*100,1), "%)*"),
+                           paste0(n, "/",n_assessment_yes, " (", round(n/n_assessment_yes*100,1), "%)†")))
 
 data_tbl_rct <- 
     all_data %>%
@@ -147,7 +123,7 @@ data_tbl_rct <-
     summarise(n = n()) %>%
     ungroup() %>%
     mutate(n_papers_rct = sum(n),
-           n_lbl = paste0(n, " (", round(n/n_papers_rct*100,1), "%)‡"))
+           n_lbl = paste0(n, "/",n_papers_rct," (", round(n/n_papers_rct*100,1), "%)‡"))
 
 n_papers_rct <- data_tbl_rct$n_papers_rct[1] 
   
@@ -159,9 +135,18 @@ data_tbl_pilotrct <-
     summarise(n = n()) %>%
     ungroup() %>%
     mutate(n_papers_pilot = sum(n),
-           n_lbl = paste0(n, " (", round(n/n_papers_pilot*100,1), "%)‡"))
+           n_lbl = paste0(n, "/",n_papers_pilot, " (", round(n/n_papers_pilot*100,1), "%)‡"))
 
-n_papers_pilot <-  data_tbl_pilotrct$n_papers_pilot[1]
+n_papers_pilot <- data_tbl_pilotrct$n_papers_pilot[1]
+
+#### Special case: there is no USABILITY/UX assessment with Pilot RCT. Add case
+data_tbl_pilotrct <- 
+  data_tbl_pilotrct %>%
+  add_row(val_type = assessment_type[2],
+          val_edrct = "PILOT RCT",
+          n = 0,
+          n_papers_pilot	= n_papers_pilot,
+          n_lbl = paste0(n, "/",n_papers_pilot," (", round(n/n_papers_pilot*100,1), "%)‡"))
 
 data_tbl_assesstype <-
   data_tbl_assess %>%
@@ -177,15 +162,15 @@ data_tbl_assesstype <-
   arrange(val_type) %>%
   add_row(.after = 1, 
           val_type="ASSESSMENT (total)", 
-          n_lbl=paste0(n_assessment_yes, " (", round(n_assessment_yes/n_papers*100,1), "%)*"), 
-          n_lbl.rct=paste0(n_papers_rct, " (", round(n_papers_rct/n_assessment_yes*100,1), "%)†"),
-          n_lbl.pilot=paste0(n_papers_pilot, " (", round(n_papers_pilot/n_assessment_yes*100,1), "%)†"))
+          n_lbl=paste0(n_assessment_yes, "/",n_papers, " (", round(n_assessment_yes/n_papers*100,1), "%)*"), 
+          n_lbl.rct=paste0(n_papers_rct, "/",n_assessment_yes, " (", round(n_papers_rct/n_assessment_yes*100,1), "%)†"),
+          n_lbl.pilot=paste0(n_papers_pilot, "/",n_assessment_yes , " (", round(n_papers_pilot/n_assessment_yes*100,1), "%)†"))
 
 # Table output with Kable
-options(knitr.kable.NA = '0 (0%)')
+options(knitr.kable.NA = 'NA')
 data_tbl_assesstype %>%
     select(`Assessment type` = val_type,
-           `N (%)` = n_lbl,
+           `ALL - N (%)` = n_lbl,
            `RCT - N (%)` = n_lbl.rct,
            `PILOT RCT - N (%)` = n_lbl.pilot) %>%
     knitr::kable(format="html", escape = T, booktabs = TRUE,    
@@ -198,9 +183,9 @@ data_tbl_assesstype %>%
     add_indent(3:5) %>%
     column_spec(1, bold = T) %>%
     footnote(symbol = 
-               c("Percentage based on the total number of studies", 
-                 "Percentage based on the number of studies with an assessment",
-                 "Percentage based on number of (Pilot) RCT studies"))
+               c(paste0("Percentage based on the total number of studies (N=",n_papers,")"),
+                 paste0("Percentage based on the number of studies with an assessment (N=",n_assessment_yes,")"),
+                 paste0("Percentage based on the number of RCT (N=",n_papers_rct,") and Pilot RCT studies (N=",n_papers_pilot,"), respectively")))
 
 
 # Table output with DT
@@ -304,7 +289,8 @@ plot_tempdist
 
 plot_tempdist_file_name <- "fig2_tempdist.png"
 
-cowplot::ggsave2(plot = plot_tempdist, filename = plot_tempdist_file_name, device = "png", path = here::here("figs"), scale = 1, width = 20, height = 28, units = "cm", dpi = 600)
+cowplot::ggsave2(plot = plot_tempdist, filename = plot_tempdist_file_name, device = "png", 
+                 path = here::here("figs"), scale = 1, width = 20, height = 28, units = "cm", dpi = 600)
 
 ```
 
@@ -431,7 +417,8 @@ plot_dist_md <-
 plot_dist_md
 
 plot_dist_md_file_name <- "fig3_dist_md.png"
-cowplot::ggsave2(plot = plot_dist_md, filename = plot_dist_md_file_name, device = "png", path = here::here("figs"), scale = 1, width = 22, height = 18, units = "cm", dpi = 600)
+cowplot::ggsave2(plot = plot_dist_md, filename = plot_dist_md_file_name, device = "png", 
+                 path = here::here("figs"), scale = 1, width = 22, height = 18, units = "cm", dpi = 600)
 
 ```
 
@@ -549,8 +536,8 @@ plot_topmd <-
 
 plot_topmd
 plot_file_name <- "fig4_linechart.png"
-cowplot::ggsave2(plot = plot_topmd, filename = plot_file_name, device = "png", path = here::here("figs"),
-    scale = 1, width = 20, height = 18, units = "cm", dpi = 600) 
+cowplot::ggsave2(plot = plot_topmd, filename = plot_file_name, device = "png", 
+                 path = here::here("figs"), scale = 1, width = 20, height = 18, units = "cm", dpi = 600) 
 
 ```
 
@@ -1067,8 +1054,8 @@ kp_bubblechart <-
 kp_bubblechart
 
 kp_file_name <- "fig5_bubble.png"
-cowplot::ggsave2(plot = kp_bubblechart, filename = kp_file_name, device = "png", path = here::here("figs"),
-    scale = 1, width = 40, height = 28, units = "cm", dpi = 600)
+cowplot::ggsave2(plot = kp_bubblechart, filename = kp_file_name, device = "png", 
+                 path = here::here("figs"), scale = 1, width = 40, height = 28, units = "cm", dpi = 600)
 
 
 ```
@@ -1134,3 +1121,18 @@ data_tbl_rct %>%
 
 
 \newpage
+
+## License
+
+This document is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+
+The code is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
+
+The data used is licensed under a [Open Data Commons Attribution License](https://opendatacommons.org/licenses/by/).
+
+## Runtime environment description.
+
+```{r session_info, echo=FALSE}
+devtools::session_info(include_base = TRUE)
+```
+
