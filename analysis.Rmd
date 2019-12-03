@@ -21,6 +21,7 @@ library(kableExtra)
 library(scales)
 library(DT)
 library(knitr)
+library(ggrepel)
 #library(RColorBrewer)
 
 ```
@@ -167,7 +168,7 @@ data_tbl_assesstype <-
           n_lbl.pilot=paste0(n_papers_pilot, "/",n_assessment_yes , " (", round(n_papers_pilot/n_assessment_yes*100,1), "%)†"))
 
 # Table output with Kable
-options(knitr.kable.NA = 'NA')
+options(knitr.kable.NA = 'N/A')
 data_tbl_assesstype %>%
     select(`Assessment type` = val_type,
            `ALL - N (%)` = n_lbl,
@@ -186,7 +187,6 @@ data_tbl_assesstype %>%
                c(paste0("Percentage based on the total number of studies (N=",n_papers,")"),
                  paste0("Percentage based on the number of studies with an assessment (N=",n_assessment_yes,")"),
                  paste0("Percentage based on the number of RCT (N=",n_papers_rct,") and Pilot RCT studies (N=",n_papers_pilot,"), respectively")))
-
 
 # Table output with DT
 # data_tbl_assesstype %>%
@@ -242,19 +242,27 @@ plot_tempdist_stakedbarchart <-
     data_plot_tempdist %>%
         ggplot(aes(x=year, y=number_cases, fill=val_type)) + 
         geom_bar(stat="identity") +
-        geom_text(aes(label=number_cases), size=2.5,position=position_stack(vjust = 0.5)) +
+        geom_text(aes(label=number_cases), size=2.7, position=position_stack(vjust = 0.5)) +
+        stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
+        #geom_label_repel(aes(x=year, y=number_cases, fill=val_type, label=number_cases)) +
         labs(#title="Count of papers per year colored by assessment type", 
              x="", 
              y="# of papers") +
         scale_fill_manual(values = pal) +
         scale_x_continuous(breaks = seq(2013,2018, by=1)) +
-        guides(fill="none") +
+        guides(fill=guide_legend(title="Assessment Type", nrow=4)) + # modify legend title
         theme_minimal() +
+        # Add legend in the top-left corner of the plot
+        theme(legend.title = element_text(size=11), 
+              legend.position = c(0.20, 0.75),
+              legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
+              legend.key = element_blank()) +
         # Change the line type and color of axis lines
         theme(axis.line = element_line(colour = "darkgray", size = 0.5, linetype = "solid")) +
         theme(panel.grid.minor = element_blank()) +
         theme(panel.background = element_blank()) +
         theme(plot.margin=unit(rep(20, 4), "pt"))
+
 
 # plot_tempdist_stakedbarchart
 
@@ -266,14 +274,14 @@ plot_tempdist_areachart <-
         x="Year", 
         y="Percentage of papers [%]", 
         caption="Source: authors") + 
-        guides(fill=guide_legend(title="Assessment Type", nrow=2)) + # modify legend title
+        guides(fill="none") + # No legend
         scale_fill_manual(values = pal) +
-        scale_y_continuous(expand=c(0,0), labels=scales::percent_format(), breaks=seq(0, 1.00, by=0.20), limits=c(0, 1.00)) +
+        scale_y_continuous(expand=c(0,0), labels=scales::percent_format(), breaks=seq(0, 1.00, by=0.10), limits=c(0, 1.00)) +
         theme_minimal() +
-        theme(legend.title = element_text(size=11), 
-              legend.position = "bottom",
-              legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
-              legend.key = element_blank()) +
+        # theme(legend.title = element_text(size=11), 
+        #       legend.position = "right",
+        #       legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
+        #       legend.key = element_blank()) +
         # Change the line type and color of axis lines
         theme(axis.line = element_line(colour = "darkgray", size = 0.5, linetype = "solid")) +
         theme(panel.grid.major = element_blank()) + 
