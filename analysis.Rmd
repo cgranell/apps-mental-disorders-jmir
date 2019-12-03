@@ -244,7 +244,6 @@ plot_tempdist_stakedbarchart <-
         geom_bar(stat="identity") +
         geom_text(aes(label=number_cases), size=2.7, position=position_stack(vjust = 0.5)) +
         stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
-        #geom_label_repel(aes(x=year, y=number_cases, fill=val_type, label=number_cases)) +
         labs(#title="Count of papers per year colored by assessment type", 
              x="", 
              y="# of papers") +
@@ -254,6 +253,7 @@ plot_tempdist_stakedbarchart <-
         theme_minimal() +
         # Add legend in the top-left corner of the plot
         theme(legend.title = element_text(size=11), 
+              # legend.justification = c('right', 'top'),
               legend.position = c(0.20, 0.75),
               legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
               legend.key = element_blank()) +
@@ -278,10 +278,6 @@ plot_tempdist_areachart <-
         scale_fill_manual(values = pal) +
         scale_y_continuous(expand=c(0,0), labels=scales::percent_format(), breaks=seq(0, 1.00, by=0.10), limits=c(0, 1.00)) +
         theme_minimal() +
-        # theme(legend.title = element_text(size=11), 
-        #       legend.position = "right",
-        #       legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
-        #       legend.key = element_blank()) +
         # Change the line type and color of axis lines
         theme(axis.line = element_line(colour = "darkgray", size = 0.5, linetype = "solid")) +
         theme(panel.grid.major = element_blank()) + 
@@ -372,7 +368,7 @@ plot_barchart <-
         scale_x_discrete(labels = md_lbl_production) +
         scale_y_continuous(expand=c(0,0), labels=scales::percent_format(accuracy=1), breaks=seq(0, 0.21, by=0.02), limits=c(0, 0.21)) +
         # Which legend to show
-        guides(fill=guide_legend(title="Assessment Type", nrow=2)) + # modify legend title
+        guides(fill=guide_legend(title="Assessment Type", nrow=1)) + # modify legend title
         theme_minimal()  +
         theme(legend.title = element_text(size=11),
               legend.position = "bottom",
@@ -426,7 +422,7 @@ plot_dist_md
 
 plot_dist_md_file_name <- "fig3_dist_md.png"
 cowplot::ggsave2(plot = plot_dist_md, filename = plot_dist_md_file_name, device = "png", 
-                 path = here::here("figs"), scale = 1, width = 22, height = 18, units = "cm", dpi = 600)
+                 path = here::here("figs"), scale = 1, width = 23, height = 18, units = "cm", dpi = 600)
 
 ```
 
@@ -520,7 +516,7 @@ plot_topmd <-
         # geom_vline(aes(xintercept = 2017), color="lightgray", linetype = "dashed", size = 0.5) +
         # annotate("rect", xmin = 2017, xmax = 2018, ymin = -Inf, ymax = +Inf, fill = "lightgray", alpha = 0.2) +
         geom_line(aes(color=md_desc), size=2.5, alpha=.4) +
-        geom_point(shape=21, size=7, color="darkgray", fill="white") +
+        geom_point(shape=21, size=9, color="darkgray", fill="white") +
         labs(#title="Distribution top mental disorders per year", 
              #subtitle = paste0("Top mental disorders (", top_lbl,")"),
              x="Year", 
@@ -531,7 +527,8 @@ plot_topmd <-
         scale_y_continuous(breaks=seq(0,13,by=1)) +
         theme_minimal() +
         # Legend: Top-Left Inside the Plot"
-        theme(legend.justification = c('left', 'top'),
+        theme(legend.title = element_text(size=11),
+              legend.justification = c('left', 'top'),
               legend.position=c(0.05, 0.95),  
               legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
               legend.key = element_blank()) +
@@ -1023,9 +1020,9 @@ kp_bubblechart <-
     theme(axis.text.x=element_text(angle=60, size=11, hjust=1, color=lbls_colors),
           axis.text.y=element_text(size=11)) +
     # Legend: Top-Right Inside the Plot
-    theme(legend.title = element_text(size=9),
+    theme(legend.title = element_text(size=11),
           legend.justification = c('right', 'top'),
-          legend.position=c(1, 0.90),
+          legend.position=c(1, 0.95),
           legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
           legend.key = element_blank()) +
     # Change the line type and color of axis lines
@@ -1063,7 +1060,7 @@ kp_bubblechart
 
 kp_file_name <- "fig5_bubble.png"
 cowplot::ggsave2(plot = kp_bubblechart, filename = kp_file_name, device = "png", 
-                 path = here::here("figs"), scale = 1, width = 40, height = 28, units = "cm", dpi = 600)
+                 path = here::here("figs"), scale = 1, width = 40, height = 29, units = "cm", dpi = 600)
 
 
 ```
