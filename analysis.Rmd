@@ -104,8 +104,6 @@ The final number of surveyed papers is `r n_papers`. For each paper, we have ext
 
 ### [NEW] Table 1: Distribution of assessment types.
 
-_NOTE_: In response to the comment **G.18** "The authors may consider presenting the data in the 'Evolution of research and assessment' paragraph using a table instead".  The following table simplifies the last paragragh of the section 'Evolution of research and assessment'.
-
 ```{r tab1_assessmenttypes, echo=FALSE}
 data_tbl_assess <- 
     all_data %>%
@@ -212,7 +210,7 @@ data_tbl_assesstype %>%
 
 ### Figure 2: Temporal trend of the number of articles published and assessment type.
 
-It combines two plots. The top one is a _stacked bar chart_ over years, and the value of each group (assessment type) is in absolute counts. The bottom one is a _proportional stacked area chart_ in which the sum of each year is always equal to hundred, and the value of each group (assessment type) is in percentages.
+It is a _stacked bar chart_ over years, and the value of each group (assessment type, coloured variable) is in absolute counts. Text within each bar includes the number of papers plus relative percentage, both referring to each group.
 
 ```{r fig2_tempdist, echo=FALSE, dpi=600, fig.width=10, fig.height=22, fig.asp=1}
 cols <- c("md", "md_id", "md_desc", "val_type", "year")
@@ -242,13 +240,14 @@ plot_tempdist_stakedbarchart <-
     data_plot_tempdist %>%
         ggplot(aes(x=year, y=number_cases, fill=val_type)) + 
         geom_bar(stat="identity") +
-        geom_text(aes(label=number_cases), size=2.7, position=position_stack(vjust = 0.5)) +
+        geom_text(aes(label=paste0(number_cases, " - ", proportion_lbl)), size=2.7, position=position_stack(vjust = 0.5)) +
         stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
         labs(#title="Count of papers per year colored by assessment type", 
-             x="", 
-             y="# of papers") +
+             x="Year", 
+             y="# of papers - Percentage of papers [%]") +
         scale_fill_manual(values = pal) +
         scale_x_continuous(breaks = seq(2013,2018, by=1)) +
+        scale_y_continuous(breaks = seq(0, 60, by=10)) +
         guides(fill=guide_legend(title="Assessment Type", nrow=4)) + # modify legend title
         theme_minimal() +
         # Add legend in the top-left corner of the plot
@@ -264,37 +263,11 @@ plot_tempdist_stakedbarchart <-
         theme(plot.margin=unit(rep(20, 4), "pt"))
 
 
-# plot_tempdist_stakedbarchart
-
-plot_tempdist_areachart <- 
-    data_plot_tempdist %>%
-        ggplot(aes(x=year, y=proportion, fill=val_type)) + 
-        geom_area() +
-        labs(#title="Temporal distribution of papers per assessment type",
-        x="Year", 
-        y="Percentage of papers [%]", 
-        caption="Source: authors") + 
-        guides(fill="none") + # No legend
-        scale_fill_manual(values = pal) +
-        scale_y_continuous(expand=c(0,0), labels=scales::percent_format(), breaks=seq(0, 1.00, by=0.10), limits=c(0, 1.00)) +
-        theme_minimal() +
-        # Change the line type and color of axis lines
-        theme(axis.line = element_line(colour = "darkgray", size = 0.5, linetype = "solid")) +
-        theme(panel.grid.major = element_blank()) + 
-        theme(panel.grid.minor = element_blank()) +
-        theme(panel.background = element_blank()) +
-        theme(plot.margin=unit(rep(20, 4), "pt"))
-
-#plot_tempdist_areachart
-
-# Put labels = C("A", "B") to identify subfigures 
-plot_tempdist <- cowplot::plot_grid(plot_tempdist_stakedbarchart, plot_tempdist_areachart, labels = NULL, ncol= 1, align = "v") 
-plot_tempdist
-
+plot_tempdist_stakedbarchart
 plot_tempdist_file_name <- "fig2_tempdist.png"
 
-cowplot::ggsave2(plot = plot_tempdist, filename = plot_tempdist_file_name, device = "png", 
-                 path = here::here("figs"), scale = 1, width = 20, height = 28, units = "cm", dpi = 600)
+cowplot::ggsave2(plot = plot_tempdist_stakedbarchart, filename = plot_tempdist_file_name, device = "png", 
+                 path = here::here("figs"), scale = 1, width = 18, height = 25, units = "cm", dpi = 600)
 
 ```
 
