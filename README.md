@@ -10,7 +10,7 @@ R Markdown notebook for the paper ["Smartphone apps for the treatment of mental 
 
 This repository is archived on Zenodo:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2682243.svg)](https://doi.org/10.5281/zenodo.2682243)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3609267.svg)](https://doi.org/10.5281/zenodo.3609267)
 
 ## Reproduce Online
 
