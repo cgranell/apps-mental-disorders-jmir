@@ -623,7 +623,7 @@ app_in_multiple_md <-
 
 ```
 
-Out of N=`r n_papers`, there are `r nrow(data_all_apps)` studies with app names. However, there are `r nrow(data_apps_in_papers)` unique apps which follow a long tail distribution, since `r nrow(data_apps_in_papers) - nrow(apps_in_multiple_papers)` appear only once, while `r nrow(apps_in_multiple_papers)` apps appear in two or more studies (an app in two studies is the most frequent case (`r apps_in_2_papers`); an app in 3 or more studies occurs in `r nrow(apps_in_multiple_papers) - apps_in_2_papers` cases. In summary, the percentage of apps that have been studied (reused) in multiple articles is `r nrow(apps_in_multiple_papers)` / `r nrow(data_all_papers)` **(`r percent(nrow(apps_in_multiple_papers)/nrow(data_all_apps))`)**. 
+Out of N=`r n_papers`, there are `r nrow(data_all_apps)` studies with app names. However, there are `r nrow(data_apps_in_papers)` unique apps which follow a long tail distribution, since `r nrow(data_apps_in_papers) - nrow(apps_in_multiple_papers)` appear only once, while `r nrow(apps_in_multiple_papers)` apps appear in two or more studies (an app in two studies is the most frequent case (`r apps_in_2_papers`); an app in 3 or more studies occurs in `r nrow(apps_in_multiple_papers) - apps_in_2_papers` cases. In summary, the percentage of apps that have been studied (reused) in multiple articles is `r nrow(apps_in_multiple_papers)` / `r nrow(data_all_apps)` **(`r percent(nrow(apps_in_multiple_papers)/nrow(data_all_apps))`)**. 
 
 \newpage
 
