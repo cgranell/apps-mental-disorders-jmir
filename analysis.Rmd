@@ -1,7 +1,7 @@
 ---
-title: 'Analysis and visualisations for "Smartphone apps for the treatment of mental disorders: a systematic review" (First Review)'
+title: 'Analysis and visualisations for "Smartphone apps for the treatment of mental disorders: a systematic review" (Second Review)'
 author: "Carlos Granell, Juana Breton-Lopez, Sven Casteleyn, Diana Castilla, Laura Diaz, Adriana Mira, Ignacio Miralles, William Van Woensel"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "15 January 2020"
 output:
   html_document:
     df_print: paged
@@ -11,8 +11,6 @@ urlcolor: blue
 
 
 ```{r load_libraries, echo=FALSE, message=FALSE, warning=FALSE}
-library(gt.emidata)
-
 library(here)
 library(tidyverse)
 library(forcats)
@@ -21,7 +19,7 @@ library(kableExtra)
 library(scales)
 library(DT)
 library(knitr)
-library(ggrepel)
+library(ggrepel) # ??
 #library(RColorBrewer)
 
 ```
@@ -34,20 +32,8 @@ This R notebook contains the code to produce the final figures and tables of the
 
 ## Data 
 
-```{r create_data, echo=FALSE}
-# FIXME: temporal solution. Create all_data.rda/csv instead
-all_data <- 
-  papers2018 %>% 
-  inner_join(papers2018_tech, by="id") %>%
-  inner_join(papers2018_psy, by="id") %>%
-  arrange(id)
-
-```
-
-
 ```{r all_data, echo=FALSE}
-# FIXME: local dataset
-#load(file = here("data", "all_data.rda"))
+load(file = here("data", "all_data.rda"))
 
 n_md <- nlevels(all_data$md_desc)
 n_papers = nrow(all_data)
