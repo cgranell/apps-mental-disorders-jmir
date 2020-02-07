@@ -294,6 +294,23 @@ lbls <- distinct(data_plot_barchart, md_desc, proportion_sum, proportion_lbl)
 top_proportion <- sum(lbls[1:6, "proportion_sum"]) 
 top_lbl <- paste0(round(top_proportion*100,1), "%")
 
+
+## MODIFICATION TO CONVERT PIECHART TO TABLE
+# library(ggpmisc)
+data_table <-
+    data_plot_barchart %>%
+    group_by(val_type) %>%
+    summarise(total_asstype = sum(number_cases)) %>%
+    mutate(lbl = round(total_asstype/n_papers*100,1), 
+           `n (%)`= paste0(total_asstype, " (", lbl, ")")) %>% 
+    select(-total_asstype, -lbl, `Assessment types`=val_type)
+
+data_table[1] <- c("No assessment", "Usability/UX", "Effect + Usability/UX", "Effect")
+
+data_table <- as_data_frame(data_table)
+## END MODIFICATION TO CONVERT PIECHART TO TABLE
+
+
 plot_barchart <- 
     data_plot_barchart %>%
       ggplot(aes(x=md_desc, y=proportion, fill=val_type)) + 
@@ -325,10 +342,12 @@ plot_barchart <-
         scale_x_discrete(labels = md_lbl_production) +
         scale_y_continuous(expand=c(0,0), labels=scales::percent_format(accuracy=1), breaks=seq(0, 0.21, by=0.02), limits=c(0, 0.21)) +
         # Which legend to show
-        guides(fill=guide_legend(title="Assessment type", nrow=1)) + # modify legend title
+        guides(fill=guide_legend(title="Assessment type", nrow=4)) + # modify legend title
+  
         theme_minimal()  +
         theme(legend.title = element_text(size=11),
-              legend.position = "bottom",
+              legend.position = c(0.70, 0.75),
+              # legend.position = "bottom",
               legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
               legend.key = element_blank()) +
         # Change the line type and color of axis lines
@@ -338,7 +357,7 @@ plot_barchart <-
         theme(panel.background = element_blank()) +
         theme(plot.margin=unit(rep(20, 4), "pt"))
 
-# plot_barchart
+ plot_barchart
 
 data_plot_piechart <-
     data_plot_barchart %>%
@@ -350,6 +369,8 @@ data_plot_piechart <-
     arrange(desc(total_asstype))
 
 data_plot_piechart$val_type <- forcats::fct_relevel(data_plot_piechart$val_type, assessment_type)
+
+
 
 plot_piechart <- 
     data_plot_piechart %>%
@@ -368,12 +389,13 @@ plot_piechart <-
     theme(panel.border = element_rect(fill=NA, colour = "darkgray", size=0.5)) +
     labs(x=NULL, y=NULL, title="Accumulated results [%]")
 
-# plot_piechart
+plot_piechart
 
+## MODIFICATION TO CONVERT PIECHART TO TABLE
 plot_dist_md <-
     ggdraw() +
-    draw_plot(plot_barchart) +
-    draw_plot(plot_piechart, 0.55, 0.55, 0.40, 0.40)
+    draw_plot(plot_barchart) # +
+    #draw_plot(plot_piechart, 0.55, 0.55, 0.40, 0.40)
 
 plot_dist_md
 
