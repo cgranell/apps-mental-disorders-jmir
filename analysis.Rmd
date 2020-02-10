@@ -1,7 +1,7 @@
 ---
-title: 'Analysis and visualisations for "Smartphone apps for the treatment of mental disorders: a systematic review" (Second Review)'
+title: 'Analysis and visualisations for "Smartphone apps for the treatment of mental disorders: a systematic review" (JMU - JMIR mHealth and uHealth)'
 author: "Carlos Granell, Juana Breton-Lopez, Sven Casteleyn, Diana Castilla, Laura Diaz, Adriana Mira, Ignacio Miralles, William Van Woensel"
-date: "15 January 2020"
+date: "10 February 2020"
 output:
   html_document:
     df_print: paged
@@ -17,7 +17,7 @@ library(forcats)
 library(cowplot)    # publication-ready theme for ggplot2
 library(kableExtra)
 library(scales)
-# library(DT)       # Alternative outpur of table.
+# library(DT)       # Alternative output of table.
 library(knitr)
 
 ```
@@ -170,23 +170,6 @@ data_tbl_assesstype %>%
                  paste0("Percentage based on the number of studies with an assessment (N=",n_assessment_yes,")"),
                  paste0("Percentage based on the number of RCT (N=",n_papers_rct,") and Pilot RCT studies (N=",n_papers_pilot,"), respectively")))
 
-# Alternative: Same output with DT package
-# data_tbl_assesstype %>%
-#     arrange(val_type) %>%
-#     select(`Assessment type` = val_type,
-#            `N (%)` = n_lbl,
-#            `RCT - N (%)` = n_lbl.rct,
-#            `PILOT RCT - N (%)` = n_lbl.pilot) %>%
-#     datatable(rownames = FALSE, 
-#             filter = "top",
-#             class = "table-bordered table-condensed hover",
-#             extensions = c("Buttons"),
-#             options = list(
-#                pageLength = 5, #autoWidth = TRUE,
-#                dom = 'Blfrtip',  # https://datatables.net/reference/option/dom
-#                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
-#             ))  %>%
-#       formatStyle('Assessment type',  fontWeight = 'bold')
 ```
 
 \newpage
