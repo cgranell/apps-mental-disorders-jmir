@@ -278,30 +278,13 @@ top_proportion <- sum(lbls[1:6, "proportion_sum"])
 top_lbl <- paste0(round(top_proportion*100,1), "%")
 
 
-## MODIFICATION TO CONVERT PIECHART TO TABLE
-# library(ggpmisc)
-data_table <-
-    data_plot_barchart %>%
-    group_by(val_type) %>%
-    summarise(total_asstype = sum(number_cases)) %>%
-    mutate(lbl = round(total_asstype/n_papers*100,1), 
-           `n (%)`= paste0(total_asstype, " (", lbl, ")")) %>% 
-    select(-total_asstype, -lbl, `Assessment types`=val_type)
-
-data_table[1] <- c("No assessment", "Usability/UX", "Effect + Usability/UX", "Effect")
-
-data_table <- as_data_frame(data_table)
-## END MODIFICATION TO CONVERT PIECHART TO TABLE
-
-
 plot_barchart <- 
     data_plot_barchart %>%
       ggplot(aes(x=md_desc, y=proportion, fill=val_type)) + 
         geom_bar(stat="identity") +
         labs(#title="Distribution per mental disorder and assessment type", 
-             #subtitle = "Total percentatge per mental disorder within each point",
              x="Mental disorders", 
-             y="Number of papers and total percentage") + 
+             y="Number of papers and total percentage") +
              # caption="Source: authors") + 
         geom_point(aes(y=proportion_sum), size=6, color="white", show.legend = F) +  
         geom_text(aes(label=number_cases), size=2.5, position=position_stack(vjust = 0.4)) +
@@ -321,7 +304,7 @@ plot_barchart <-
                          xend="Trauma and stressor-related disorders",
                          yend=0.18), color="black") +
         coord_flip() +
-        scale_fill_manual(name="Assessment Type", values = pal) +
+        scale_fill_manual(name="Assessment type", values = pal) +
         scale_x_discrete(labels = md_lbl_production) +
         scale_y_continuous(expand=c(0,0), labels=scales::percent_format(accuracy=1), breaks=seq(0, 0.21, by=0.02), limits=c(0, 0.21)) +
         # Which legend to show
@@ -330,7 +313,6 @@ plot_barchart <-
         theme_minimal()  +
         theme(legend.title = element_text(size=11),
               legend.position = c(0.70, 0.75),
-              # legend.position = "bottom",
               legend.background = element_rect(color = "darkgray", size = 0.5, linetype ="solid"),
               legend.key = element_blank()) +
         # Change the line type and color of axis lines
@@ -340,45 +322,10 @@ plot_barchart <-
         theme(panel.background = element_blank()) +
         theme(plot.margin=unit(rep(20, 4), "pt"))
 
- plot_barchart
-
-data_plot_piechart <-
-    data_plot_barchart %>%
-    group_by(val_type) %>%
-    summarise(total_asstype = sum(number_cases)) %>%
-    mutate(lbl = paste0(round(total_asstype/n_papers*100,1), "%"),
-           cumulative= cumsum(total_asstype),
-           midpoint = cumulative-total_asstype/2) %>% 
-    arrange(desc(total_asstype))
-
-data_plot_piechart$val_type <- forcats::fct_relevel(data_plot_piechart$val_type, assessment_type)
-
-
-
-plot_piechart <- 
-    data_plot_piechart %>%
-    ggplot(aes(x="", y=total_asstype, fill=val_type)) +
-    geom_bar(width=1, stat = "identity") +
-    coord_polar(theta="y", start=0, direction = 1) +
-    geom_text(aes(y=midpoint, label=lbl), size=3, show.legend = F) +
-    scale_fill_manual(name="Assessment Type", values = pal) + 
-    # Which legend to show
-    guides(fill="none") +
-    theme_minimal() +
-    theme(legend.title = element_text(size=9)) +
-    theme(axis.text = element_blank(),
-          axis.ticks = element_blank(),
-          panel.grid = element_blank()) +
-    theme(panel.border = element_rect(fill=NA, colour = "darkgray", size=0.5)) +
-    labs(x=NULL, y=NULL, title="Accumulated results [%]")
-
-plot_piechart
-
-## MODIFICATION TO CONVERT PIECHART TO TABLE
+# plot_barchart
 plot_dist_md <-
     ggdraw() +
-    draw_plot(plot_barchart) # +
-    #draw_plot(plot_piechart, 0.55, 0.55, 0.40, 0.40)
+    draw_plot(plot_barchart) 
 
 plot_dist_md
 
