@@ -5,7 +5,13 @@ R Markdown notebook for the paper ["Smartphone apps for the treatment of mental 
 > Miralles I, Granell C, Díaz-Sanahuja L, Van Woensel W, Bretón-López J, Mira A, Castilla D, Casteleyn S.
 > Smartphone apps for the treatment of mental disorders: a systematic review.
 > Submitted to JMIR mHealth and uHealth
-> DOI: 
+> DOI: 10.2196/14897
+
+
+[![](https://img.shields.io/badge/JMU-http%3A%2F%2Fdoi.org%2F10.2196%2F14897-yellow.svg)](https://doi.org/10.2196/14897)
+
+
+Complementing the published article, we have created a [dashboard](https://rpubs.com/cgranell/jmu2020) to allow readers to interactively explore the review results. 
 
 
 This repository is archived on Zenodo:
